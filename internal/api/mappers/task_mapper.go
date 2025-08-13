@@ -8,10 +8,11 @@ import (
 // ToTaskResponse преобразует доменную модель Task в DTO для ответа API
 func ToTaskResponse(t models.Task) dto.TaskResponse {
 	return dto.TaskResponse{
-		ID:        t.ID,
-		Name:      t.Name,
-		Status:    string(t.Status),
-		CreatedAt: t.CreatedAt,
+		ID:          t.ID,
+		Name:        t.Name,
+		Description: t.Description,
+		Status:      string(t.Status),
+		CreatedAt:   t.CreatedAt,
 	}
 }
 

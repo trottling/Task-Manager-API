@@ -13,7 +13,7 @@ const (
 type Task struct {
 	ID          int
 	Name        string
-	Description *string
+	Description string
 	Status      Status
 	CreatedAt   time.Time
 }
