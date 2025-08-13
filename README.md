@@ -161,5 +161,3 @@ curl -s 'http://localhost:8080/tasks?status=new&limit=10&offset=0' | jq
 
     * middleware пишет метод, путь, статус и длительность
     * хендлеры логируют валидаторные 4xx как Info, 5xx как Error, бизнес-события - Info
-
-```
