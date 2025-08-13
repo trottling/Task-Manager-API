@@ -1,21 +1,46 @@
 package main
 
 import (
-  "fmt"
+	"errors"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"server/internal/api/handlers"
+	"server/internal/core/logger"
+	"server/internal/core/storage"
 )
 
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
-
 func main() {
-  //TIP <p>Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined text
-  // to see how GoLand suggests fixing the warning.</p><p>Alternatively, if available, click the lightbulb to view possible fixes.</p>
-  s := "gopher"
-  fmt.Printf("Hello and welcome, %s!\n", s)
+	// Инициализация зависимостей
+	appLogger := logger.NewLogger("[server] ", 100)
+	defer appLogger.Close()
 
-  for i := 1; i <= 5; i++ {
-	//TIP <p>To start your debugging session, right-click your code in the editor and select the Debug option.</p> <p>We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-	// for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.</p>
-	fmt.Println("i =", 100/i)
-  }
+	store := storage.NewStorage()
+	r := handlers.NewRouter(store, appLogger)
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r, // Router реализует http.Handler
+	}
+
+	// Канал для graceful shutdown
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		appLogger.Info("Server started on %s", srv.Addr)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("Server error: %v", err)
+		}
+	}()
+
+	// Ждём сигнал
+	<-stop
+	appLogger.Info("Shutting down server...")
+	if err := srv.Close(); err != nil {
+		appLogger.Error("Error during server shutdown: %v", err)
+	}
+	appLogger.Info("Server stopped")
 }
