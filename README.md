@@ -77,7 +77,7 @@ make run
 
 ### GET /tasks/{id}
 
-`Получить задачу по ID:`
+Получить задачу по ID:
 
 `200 response`
 
