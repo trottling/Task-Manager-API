@@ -1,0 +1,11 @@
+bin/
+dist/
+build/
+vendor/
+.coverage
+coverage.out
+**/*.swp
+**/*.log
+.git
+.idea
+.vscode
