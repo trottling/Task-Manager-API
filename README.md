@@ -115,6 +115,10 @@ make test
 # под капотом: go test ./... -v
 ```
 
+### Postman
+
+В проекте есть готовая коллекция для Postman — `task-api.postman_collection.json`
+
 ## Сборка
 
 ```bash

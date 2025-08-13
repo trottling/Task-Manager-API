@@ -1,0 +1,87 @@
+{
+  "info": {
+    "name": "Task API",
+    "_postman_id": "e1f79c98-aaaa-bbbb-cccc-1234567890ab",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "taskId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "1) Create Task",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/tasks", "host": [ "{{baseUrl}}" ], "path": [ "tasks" ] },
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Buy milk\",\n  \"status\": \"new\"\n}" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"201 Created\", function () { pm.response.to.have.status(201); });",
+              "const data = pm.response.json();",
+              "pm.expect(data).to.have.property('id');",
+              "pm.variables.set('taskId', data.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2) Get Task by ID",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/tasks/{{taskId}}", "host": [ "{{baseUrl}}" ], "path": [ "tasks", "{{taskId}}" ] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"200 OK\", function () { pm.response.to.have.status(200); });",
+              "const data = pm.response.json();",
+              "pm.expect(data.id).to.eql(parseInt(pm.variables.get('taskId')));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3) List Tasks by Status",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/tasks?status=new&limit=10&offset=0",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "tasks" ],
+          "query": [
+            { "key": "status", "value": "new" },
+            { "key": "limit", "value": "10" },
+            { "key": "offset", "value": "0" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"200 OK\", function () { pm.response.to.have.status(200); });",
+              "const data = pm.response.json();",
+              "pm.expect(data).to.have.property('items');",
+              "pm.expect(data).to.have.property('total');",
+              "pm.expect(data.items.length).to.be.at.least(1);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}
