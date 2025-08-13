@@ -36,7 +36,7 @@ func NewRouter(st *storage.Storage, log *logger.Logger) *Router {
 	mux.HandleFunc("GET /tasks/{id}", r.GetTaskByID)
 	mux.HandleFunc("GET /tasks", r.ListTasks)
 
-	log.Info("router initialized: POST /tasks, GET /tasks/{id}, GET /tasks")
+	log.Info("router initialized successfully")
 	return r
 }
 
