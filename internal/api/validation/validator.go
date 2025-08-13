@@ -34,6 +34,7 @@ func ValidateCreateTaskRequest(req dto.CreateTaskRequest) error {
 func ProcessListQuery(q *dto.ListTasksQuery, defLimit, maxLimit int) error {
 
 	// Проверяем статус
+	// Можно переписать на получения всех задач при условии, что он пустой
 	if q.Status != nil && !IsValidStatus(*q.Status) {
 		return errors.New(WrongStatusError)
 	}
