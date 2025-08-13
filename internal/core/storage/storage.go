@@ -4,6 +4,7 @@ import (
 	"errors"
 	"server/internal/core/models"
 	"sync"
+	"time"
 )
 
 const (
@@ -30,6 +31,8 @@ func (s *Storage) AddTask(task *models.Task) (int, error) {
 	defer s.Mutex.Unlock()
 
 	taskID := len(s.Tasks) + 1
+	task.ID = taskID
+	task.CreatedAt = time.Now()
 	s.Tasks[taskID] = task
 
 	return taskID, nil
