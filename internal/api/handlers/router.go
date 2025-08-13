@@ -8,37 +8,39 @@ import (
 )
 
 const (
-	InvalidJSONError      = "InvalidJSON"
-	AddTaskError          = "AddTaskError"
 	ListQueryMaxLimit     = 200
 	ListQueryDefaultLimit = 50
+
+	ValidationErrorFmt  = "validation error: %s"
+	InvalidJSONErrorFmt = "json decoding error: %s"
+	StorageErrorFmt     = "storage error: %s"
 )
 
 type Router struct {
-	mux     *http.ServeMux
+	mux     http.Handler
 	storage *storage.Storage
 	log     *logger.Logger
 }
 
 // NewRouter создает роутер и регистрирует эндпоинты
 func NewRouter(st *storage.Storage, log *logger.Logger) *Router {
+	mux := http.NewServeMux()
+
 	r := &Router{
-		mux:     http.NewServeMux(),
+		mux:     log.Middleware(mux),
 		storage: st,
 		log:     log,
 	}
-	r.register()
+
+	mux.HandleFunc("POST /tasks", r.CreateTask)
+	mux.HandleFunc("GET /tasks/{id}", r.GetTaskByID)
+	mux.HandleFunc("GET /tasks", r.ListTasks)
+
+	log.Info("router initialized: POST /tasks, GET /tasks/{id}, GET /tasks")
 	return r
 }
 
-// ServeHTTP позволяет использовать Router как http Handler.
+// ServeHTTP позволяет использовать Router как http Handler
 func (rt *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	rt.mux.ServeHTTP(w, req)
-}
-
-// register навешивает хендлеры.
-func (rt *Router) register() {
-	rt.mux.HandleFunc("POST /tasks", rt.CreateTask)
-	rt.mux.HandleFunc("GET /tasks/{id}", rt.GetTaskByID)
-	rt.mux.HandleFunc("GET /tasks", rt.ListTasks) // ?status=&limit=&offset=
 }

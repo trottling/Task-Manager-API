@@ -1,15 +1,17 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
+
 	"server/internal/api/dto"
 	"server/internal/api/mappers"
 	"server/internal/api/validation"
 	"server/internal/utils"
-	"strconv"
 )
 
-// ListTasks GET /tasks?status=...&limit=...&offset=...
+// ListTasks - GET /tasks?status=...&limit=...&offset=...
 func (rt *Router) ListTasks(w http.ResponseWriter, r *http.Request) {
 	var q dto.ListTasksQuery
 
@@ -26,15 +28,18 @@ func (rt *Router) ListTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := validation.ProcessListQuery(&q, ListQueryDefaultLimit, ListQueryMaxLimit); err != nil {
-		utils.WriteJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		rt.log.Info("list query validation failed: %v", err)
+		utils.WriteJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: fmt.Sprintf(ValidationErrorFmt, err.Error())})
 		return
 	}
 
 	tasks, total, err := rt.storage.GetTasksByStatus(*q.Status, q.Limit, q.Offset)
 	if err != nil {
-		utils.WriteJSON(w, http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
+		rt.log.Error("storage list error: %v", err)
+		utils.WriteJSON(w, http.StatusInternalServerError, dto.ErrorResponse{Error: fmt.Sprintf(StorageErrorFmt, err.Error())})
 		return
 	}
 
+	rt.log.Info("tasks listed status=%s limit=%d offset=%d total=%d", *q.Status, q.Limit, q.Offset, total)
 	utils.WriteJSON(w, http.StatusOK, mappers.ToListTasksResponse(tasks, total))
 }
