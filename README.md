@@ -25,7 +25,7 @@
 ├── internal
 │   ├── api
 │   │   ├── dto            # DTO запросов и ответов
-│   │   ├── handlers       # Router-структура + хендлеры + встроенный Swagger UI
+│   │   ├── handlers       # Router-структура + хендлеры
 │   │   ├── mappers        # model -> DTO
 │   │   └── validation     # валидация DTO
 │   ├── core
