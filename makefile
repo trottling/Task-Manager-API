@@ -5,14 +5,14 @@ BIN_DIR=bin
 # Так как сервер на чистом GO установка зависимостей не требуется
 #
 
-# Сборка с докера
+# Docker сборка
 docker-build:
-	@echo "Docker build"
+	@echo "Building Docker image..."
 	@docker build -t task-api:latest .
 
-# Запуск с докера
-docker-run:
-	@echo "Docker run"
+# Docker запуск
+docker-run: docker-build
+	@echo "Running Docker container..."
 	@docker run --rm -p 8080:8080 task-api:latest
 
 # Запуск тестов
