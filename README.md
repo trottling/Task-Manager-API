@@ -1,6 +1,6 @@
 # Task Manager API (Go)
 
-Лёгкое REST API для задач на Go: in-memory хранилище, валидация, логирование, graceful shutdown, Swagger-доки из YAML.
+Лёгкое REST API для задач на Go: in-memory хранилище, валидация, логирование, graceful shutdown
 
 ## Фичи
 
@@ -13,7 +13,7 @@
 
 ## Стек
 
-- Go 1.22+
+- Go 1.22+, проект написан и протестирован на Go 1.24.4 
 - Весь проект на встроенных библиотеках
 
 ## Структура
@@ -42,7 +42,7 @@
 ## Запуск локально
 
 ```bash
-go run ./cmd/app
+go run ./cmd/main.go
 # или
 make run
 ````
